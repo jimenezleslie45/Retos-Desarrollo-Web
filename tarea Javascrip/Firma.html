@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firma Digital</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+        
+        .container {
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        canvas {
+            border: 2px solid #444;
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: crosshair;
+        }
+        
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .color-picker {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .line-width-selector {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Firma Digital</h1>
+        <canvas id="signatureCanvas" width="600" height="400"></canvas>
+        <div class="controls">
+            <div class="color-picker">
+                <label for="penColor">Color:</label>
+                <input type="color" id="penColor" value="#000000">
+            </div>
+            <div class="line-width-selector">
+                <label for="penWidth">Grosor:</label>
+                <input type="range" id="penWidth" min="1" max="20" value="3">
+            </div>
+            <button id="clearBtn">Limpiar</button>
+            <button id="saveBtn">Guardar</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('signatureCanvas');
+            const ctx = canvas.getContext('2d');
+            const penColor = document.getElementById('penColor');
+            const penWidth = document.getElementById('penWidth');
+            const clearBtn = document.getElementById('clearBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+            
+            // Configuración inicial del canvas
+            ctx.strokeStyle = penColor.value;
+            ctx.lineWidth = penWidth.value;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            // Eventos del mouse/touch
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+            
+            // Eventos para dispositivos táctiles
+            canvas.addEventListener('touchstart', handleTouchStart);
+            canvas.addEventListener('touchmove', handleTouchMove);
+            canvas.addEventListener('touchend', handleTouchEnd);
+            
+            // Eventos de controles
+            penColor.addEventListener('change', updatePenSettings);
+            penWidth.addEventListener('input', updatePenSettings);
+            clearBtn.addEventListener('click', clearCanvas);
+            saveBtn.addEventListener('click', saveSignature);
+            
+            function startDrawing(e) {
+                isDrawing = true;
+                [lastX, lastY] = getMousePosition(canvas, e);
+            }
+            
+            function draw(e) {
+                if (!isDrawing) return;
+                
+                ctx.beginPath();
+                ctx.moveTo(lastX, lastY);
+                [lastX, lastY] = getMousePosition(canvas, e);
+                ctx.lineTo(lastX, lastY);
+                ctx.stroke();
+            }
+            
+            function stopDrawing() {
+                isDrawing = false;
+            }
+            
+            function handleTouchStart(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousedown', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                canvas.dispatchEvent(mouseEvent);
+            }
+            
+            function handleTouchMove(e) {
+                e.preventDefault();
+                const touch = e.touches[0];
+                const mouseEvent = new MouseEvent('mousemove', {
+                    clientX: touch.clientX,
+                    clientY: touch.clientY
+                });
+                canvas.dispatchEvent(mouseEvent);
+            }
+            
+            function handleTouchEnd(e) {
+                e.preventDefault();
+                const mouseEvent = new MouseEvent('mouseup', {});
+                canvas.dispatchEvent(mouseEvent);
+            }
+            
+            function getMousePosition(canvas, event) {
+                const rect = canvas.getBoundingClientRect();
+                return [
+                    event.clientX - rect.left,
+                    event.clientY - rect.top
+                ];
+            }
+            
+            function updatePenSettings() {
+                ctx.strokeStyle = penColor.value;
+                ctx.lineWidth = penWidth.value;
+            }
+            
+            function clearCanvas() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+            
+            function saveSignature() {
+                const dataURL = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = 'firma-digital.png';
+                link.href = dataURL;
+                link.click();
+            }
+        });
+    </script>
+</body>
+</html>

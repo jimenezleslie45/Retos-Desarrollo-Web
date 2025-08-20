@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tablero Kanban Interactivo</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="board-header">
+        <h1>Mi Tablero Kanban</h1>
+        <button id="addColumnBtn" class="add-btn">Agregar Nueva Columna</button>
+    </header>
+
+    <main id="kanbanBoard" class="kanban-board">
+        <div class="column" id="column-1" data-column-id="1">
+            <h2 class="column-header">Por Hacer</h2>
+            <div class="card-list" data-column-id="1">
+                <div class="card" draggable="true" data-card-id="1">Diseñar interfaz de usuario</div>
+                <div class="card" draggable="true" data-card-id="2">Definir estructura de base de datos</div>
+            </div>
+            <button class="add-card-btn" data-column-id="1">Añadir Tarea</button>
+        </div>
+
+        <div class="column" id="column-2" data-column-id="2">
+            <h2 class="column-header">En Progreso</h2>
+            <div class="card-list" data-column-id="2">
+                <div class="card" draggable="true" data-card-id="3">Desarrollar autenticación</div>
+            </div>
+            <button class="add-card-btn" data-column-id="2">Añadir Tarea</button>
+        </div>
+
+        <div class="column" id="column-3" data-column-id="3">
+            <h2 class="column-header">Hecho</h2>
+            <div class="card-list" data-column-id="3">
+                <div class="card" draggable="true" data-card-id="4">Investigación de mercado</div>
+            </div>
+            <button class="add-card-btn" data-column-id="3">Añadir Tarea</button>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
